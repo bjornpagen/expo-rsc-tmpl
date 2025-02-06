@@ -2,14 +2,16 @@ import {
 	boolean,
 	char,
 	date,
-	pgTable,
 	text,
-	timestamp
+	timestamp,
+	pgTableCreator
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
 
-export const user = pgTable("user", {
+export const createTable = pgTableCreator((name) => `myapp_${name}`)
+
+export const user = createTable("user", {
 	id: char("id", { length: 24 }).primaryKey().notNull().$default(createId),
 	name: text("name").notNull(),
 	email: text("email").notNull(),
@@ -24,12 +26,7 @@ export const user = pgTable("user", {
 		.$onUpdateFn(() => new Date())
 })
 
-export const userRelations = relations(user, ({ many }) => ({
-	sessions: many(session),
-	accounts: many(account)
-}))
-
-export const session = pgTable("session", {
+export const session = createTable("session", {
 	id: char("id", { length: 24 }).primaryKey().notNull().$default(createId),
 	userId: char("user_id", { length: 24 })
 		.notNull()
@@ -47,14 +44,7 @@ export const session = pgTable("session", {
 		.$onUpdateFn(() => new Date())
 })
 
-export const sessionRelations = relations(session, ({ one }) => ({
-	user: one(user, {
-		fields: [session.userId],
-		references: [user.id]
-	})
-}))
-
-export const account = pgTable("account", {
+export const account = createTable("account", {
 	id: char("id", { length: 24 }).primaryKey().notNull().$default(createId),
 	userId: char("user_id", { length: 24 })
 		.notNull()
@@ -77,14 +67,7 @@ export const account = pgTable("account", {
 		.$onUpdateFn(() => new Date())
 })
 
-export const accountRelations = relations(account, ({ one }) => ({
-	user: one(user, {
-		fields: [account.userId],
-		references: [user.id]
-	})
-}))
-
-export const verification = pgTable("verification", {
+export const verification = createTable("verification", {
 	id: char("id", { length: 24 }).primaryKey().notNull().$default(createId),
 	identifier: text("identifier").notNull(),
 	value: text("value").notNull(),
@@ -97,3 +80,22 @@ export const verification = pgTable("verification", {
 		.$defaultFn(() => new Date())
 		.$onUpdateFn(() => new Date())
 })
+
+export const userRelations = relations(user, ({ many }) => ({
+	sessions: many(session),
+	accounts: many(account)
+}))
+
+export const sessionRelations = relations(session, ({ one }) => ({
+	user: one(user, {
+		fields: [session.userId],
+		references: [user.id]
+	})
+}))
+
+export const accountRelations = relations(account, ({ one }) => ({
+	user: one(user, {
+		fields: [account.userId],
+		references: [user.id]
+	})
+}))
