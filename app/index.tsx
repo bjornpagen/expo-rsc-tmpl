@@ -40,10 +40,8 @@ export default async function Index() {
 
 	return (
 		<View style={styles.container}>
-			<Text>
-				{session?.user.name ? `Welcome ${session.user.name}!` : "Not signed in"}
-			</Text>
-			{!session?.user.id && (
+			<Text>{session ? `Welcome ${session.user.name}!` : "Not signed in"}</Text>
+			{!session && (
 				<React.Fragment>
 					<Link href="/signin" asChild>
 						<Pressable style={styles.signInButton}>

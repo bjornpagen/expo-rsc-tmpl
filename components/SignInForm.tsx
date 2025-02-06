@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { View, TextInput, Text, Pressable } from "react-native"
+import { useRouter } from "expo-router"
 import { authClient } from "@/lib/auth-client"
 
 const styles = {
@@ -34,6 +35,7 @@ const styles = {
 }
 
 export default function SignInForm() {
+	const router = useRouter()
 	const [email, setEmail] = React.useState("")
 	const [password, setPassword] = React.useState("")
 
@@ -61,6 +63,9 @@ export default function SignInForm() {
 			/>
 			<Pressable style={styles.button} onPress={handleLogin}>
 				<Text style={styles.buttonText}>Sign In</Text>
+			</Pressable>
+			<Pressable onPress={() => router.push("/signup")}>
+				<Text>Need an account? Sign up</Text>
 			</Pressable>
 		</View>
 	)
